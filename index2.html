@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=s, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="c" width ="500" height="500"></canvas>
+    <script>
+        context = c.getContext("2d");
+        const bird = new Image();
+        //  bird.src = "https://i.dlpng.com/static/png/6682987_preview.png";
+        bird.src =
+          "http://assets.stickpng.com/images/59cfc988d3b1936210a5dde0.png";
+        gameState = false;
+        birdX = birdDY = score = bestScore = 0;
+        birdSize = 100;
+        pipeWidth = topPipeBottomY = 50;
+        interval = 25;
+        birdY = pipeGap = 200;
+        canvasSize = pipeX = 500;
+        mySound = new sound("roblox-death-sound_1.mp3");
+        myMusic = new sound("Islandboy.mp3");
+        c.onclick = () => {
+            (gameState == false)&&((birdY = 200),(pipeX = canvasSize), (score = 0));
+            (gameState = true)&&(myMusic.play());
+            birdDY = 8;
+        };
+        setInterval(() => {
+          context.fillStyle = "skyblue";
+          context.fillRect(0, 0, canvasSize, canvasSize); //Sky
+          gameState && (birdY -= birdDY -= 0.5); // Gravity
+          context.drawImage(bird, 20, birdY, birdSize, birdSize); // Bird
+          context.fillStyle = "brown";
+          gameState&& (pipeX -= 10); // Move pipe
+          pipeX < -pipeWidth &&
+            ((pipeX = canvasSize), (topPipeBottomY = pipeGap * Math.random()));
+          context.fillRect(pipeX, 0, pipeWidth, topPipeBottomY);
+          context.fillRect(
+            pipeX,
+            topPipeBottomY + pipeGap,
+            pipeWidth,
+            canvasSize
+          );
+          context.fillStyle = "white";
+          gameState && (score++) && (pipeX--); // Move
+          context.fillText(`Score:${score}`, 10, 15);
+  
+          bestScore = bestScore < score ? score : bestScore;
+          context.fillText(`Best: ${bestScore}`, 10, 25);
+  
+          (((birdY < topPipeBottomY || birdY > topPipeBottomY + pipeGap) &&
+            pipeX < birdSize) || //Hit pipe
+            birdY > canvasSize -20) && //fall
+            ((birdDY = 0), (gameState=false));
+            context.fillStyle = "black";
+            context.font = '50px serif';
+            (gameState == false) && (context.fillText("Click to play again",50,200,500),(mySound.play()),(myMusic.stop()))
+            context.font = '10px serif';// (birdY = 200), (pipeX = canvasSize), (score = 0));
+        }, interval);
+
+        function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    }
+    this.stop = function(){
+        this.sound.pause();
+    }    
+}
+      </script>
+</body>
+</html>
